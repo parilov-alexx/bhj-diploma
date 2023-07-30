@@ -47,6 +47,7 @@ class CreateTransactionForm extends AsyncForm {
    * вызывает App.update(), сбрасывает форму и закрывает окно,
    * в котором находится форма
    * */
+
   onSubmit(options) {
     Transaction.create(options.data, (err, response) => {
       

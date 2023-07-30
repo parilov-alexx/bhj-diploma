@@ -8,6 +8,7 @@ class CreateAccountForm extends AsyncForm {
    * окно в случае успеха, а также вызывает App.update()
    * и сбрасывает форму
    * */
+
   onSubmit(options) {
     Account.create(options.data, (err, response) => {
       

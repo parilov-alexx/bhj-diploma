@@ -5,6 +5,7 @@
  * с таких форм собираются и передаются в метод onSubmit
  * для последующей обработки
  * */
+
 class AsyncForm {
   /**
    * Если переданный элемент не существует,
@@ -37,6 +38,7 @@ class AsyncForm {
    *  'название поля формы 2': 'значение поля формы 2'
    * }
    * */
+
   getData() {
     const formData = new FormData(this.element);
     let result = {};

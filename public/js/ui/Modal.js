@@ -4,6 +4,7 @@
  * В первую очередь это открытие или
  * закрытие имеющихся окон
  * */
+
 class Modal {
   /**
    * Устанавливает текущий элемент в свойство element
@@ -13,8 +14,10 @@ class Modal {
    * */
   constructor(element) {
     if (!element) {
-      throw new Error('Пустой элемент в конструкторе класса Modal');}
+      throw new Error('Параметр element класса Modal не задан');
+    }
     this.element = element;
+
     this.registerEvents();
   }
 
@@ -24,18 +27,23 @@ class Modal {
    * (с помощью метода Modal.onClose)
    * */
   registerEvents() {
-    for (const button of this.element.querySelectorAll('[data-dismiss="modal"]')) {
-    button.addEventListener('click', this.onClose);}     
+    const closeTriggers = this.element.querySelectorAll('[data-dismiss="modal"]');
+
+    for (const closeTrigger of closeTriggers) {
+      closeTrigger.onclick = () => {
+        this.onClose();
+      }
+    }
   }
 
   /**
    * Срабатывает после нажатия на элементы, закрывающие окно.
    * Закрывает текущее окно (Modal.close())
    * */
-  onClose(e) {
-    e.preventDefault();
+  onClose() {
     this.close();
   }
+
   /**
    * Открывает окно: устанавливает CSS-свойство display
    * со значением «block»
@@ -43,10 +51,11 @@ class Modal {
   open() {
     this.element.style.display = 'block';
   }
+
   /**
    * Закрывает окно: удаляет CSS-свойство display
    * */
-  close(){
-    this.element.style.display = '';
+  close() {
+    this.element.style.removeProperty('display');
   }
 }

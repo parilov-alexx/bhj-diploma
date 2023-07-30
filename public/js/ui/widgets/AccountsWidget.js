@@ -120,6 +120,7 @@ class AccountsWidget {
    * AccountsWidget.getAccountHTML HTML-код элемента
    * и добавляет его внутрь элемента виджета
    * */
+  'use strict'
   renderItem(item){
     const container = document.createElement('div');
     container.innerHTML = this.getAccountHTML(item);

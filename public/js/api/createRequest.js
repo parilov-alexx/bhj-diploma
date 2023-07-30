@@ -2,49 +2,48 @@
  * Основная функция для совершения запросов
  * на сервер.
  * */
-const createRequest = (options = {}) => {
-    const {url, headers, data, responseType, method, callback} = options;  
-    const requestUrl = new URL('http:/localhost:8000' + url);
+const createRequest = (options) => {
+  if (!options) {
+    throw new Error('Параметр options функции createRequest не задан');
+  }
 
-    if(method === 'GET') {
-        for (const key in data) {
-            requestUrl.searchParams.set(key, data[key]);
-          }
-    }
-    const request = new XMLHttpRequest;
-    request.withCredentials = true; 
+  let {url, headers, data, responseType, method, callback} = options;
+  const xhr = new XMLHttpRequest();
 
-    try {
-        request.open(method, requestUrl);
-        for (const header in headers) {
-      request.setRequestHeader(header, headers[header])};
-        request.responseType = 'json';
-        if(method === 'GET') {
-            request.send()
-        } else {
-            const formData = new FormData;
-            for (const key in data) {
-             formData.append(key, data[key])};
-             request.send(formData);
-        }
-    } catch (error) {
-        callback(error);
+  try {
+    xhr.open(method, url);
+    xhr.responseType = responseType;
+    xhr.withCredentials = true;
+
+    if (headers) {
+      for (const [key, value] of Object.entries(headers)) {
+        xhr.setRequestHeader(key, value);
+      }
     }
 
+    xhr.onloadend = () => {
+      if (String(xhr.status).startsWith('2')) {
+        callback(xhr.response?.error, xhr.response);
+      } else {
+        let content = 'Сервер не принял запрос. ';
+        content += `Ошибка ${xhr.status}: ${xhr.statusText}.`;
+        console.error(content);
+      }
+    }
 
-
-request.addEventListener('readystatechange', function() {
-    if (this.readyState !== this.DONE)  
-      return;
-          
-    if (this.status === 200) { 
-      callback(null, this.response);
-    } else if (this.status) {
-      callback({ status: this.status, statusText: this.statusText });
+    if (data === undefined) {
+      xhr.send();
     } else {
-      callback({ status: 0, statusText: 'Нет связи с сервером' });      
+      const formData = new FormData();
+
+      for (const [key, value] of Object.entries(data)) {
+        formData.append(key, value);
+      }
+
+      xhr.send(formData);
     }
-  });
- 
-  return request;
+  }
+  catch (e) {
+    console.error(e);
+  }
 };

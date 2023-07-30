@@ -18,36 +18,50 @@ class Sidebar {
    * при нажатии на кнопку .sidebar-toggle
    * */
   static initToggleButton() {
-    const body = document.querySelector('body');
-    document.querySelector('.sidebar-toggle').addEventListener('click', e => {
-      e.preventDefault();
-      body.classList.toggle('sidebar-open');
-      body.classList.toggle('sidebar-collapse');
-    });
+    const sidebarToggle = document.querySelector('.sidebar-toggle');
+
+    sidebarToggle.onclick = () => {
+      document.body.classList.toggle('sidebar-open');
+      document.body.classList.toggle('sidebar-collapse');
+    }
   }
 
   /**
    * При нажатии на кнопку входа, показывает окно входа
    * (через найденное в App.getModal)
-   * При нажатии на кнопку регастрации показывает окно регистрации
+   * При нажатии на кнопку регистрации показывает окно регистрации
    * При нажатии на кнопку выхода вызывает User.logout и по успешному
    * выходу устанавливает App.setState( 'init' )
    * */
   static initAuthLinks() {
-    document.querySelector('.menu-item_login').querySelector('a').addEventListener('click', e => {
-      e.preventDefault();
-      App.getModal('login').open();
-    });
-    document.querySelector('.menu-item_register').querySelector('a').addEventListener('click', e => {
-      e.preventDefault();
-      App.getModal('register').open();
-    });
-    document.querySelector('.menu-item_logout').querySelector('a').addEventListener('click', e => {
-      e.preventDefault();
-      User.logout({}, (err, response) => {
-        if (response.success)
-          App.setState('init'); 
-      });
-    });
+    const menuItems = document.getElementsByClassName('menu-item');
+
+    for (const item of menuItems) {
+      let handler;
+
+      if (item.classList.contains('menu-item_login')) {
+        handler = () => {
+          App.getModal('login').open();
+        }
+      } else if (item.classList.contains('menu-item_register')) {
+        handler = () => {
+          App.getModal('register').open();
+        }
+      } else if (item.classList.contains('menu-item_logout')) {
+        handler = () => {
+          const callback = (error) => {
+            if (error) {
+              handleError(error);
+            } else {
+              App.setState('init');
+            }
+          };
+
+          User.logout(User.current(), callback);
+        }
+      }
+
+      item.onclick = handler;
+    }
   }
 }
